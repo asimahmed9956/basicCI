@@ -1,0 +1,31 @@
+---
+- name: Deploy FastAPI container
+  hosts: fastapi
+  become: true
+  tasks:
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull FastAPI Docker image
+      community.docker.docker_image:
+        name: fastapi-app
+        source: build
+        build:
+          path: /home/ec2-user/fastapi-devops-demo
+          pull: yes
+
+    - name: Run FastAPI container
+      community.docker.docker_container:
+        name: fastapi
+        image: fastapi-app
+        ports:
+          - "80:8000"
+        restart_policy: always

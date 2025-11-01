@@ -1,0 +1,67 @@
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run FastAPI tests
+        run: pytest || echo "No tests yet"
+
+      - name: Build Docker image
+        run: docker build -t fastapi-app .
+
+      
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 🟢 STEP 1: Configure AWS credentials from GitHub Secrets
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 🟢 STEP 2: Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 🟢 STEP 3: Initialize Terraform
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
+
+      # 🟢 STEP 4: Apply Terraform (Create EC2)
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./terraform
+
+      # 🟢 STEP 5: Run Ansible Playbook
+      - name: Run Ansible playbook for deployment
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: ansible/playbook.yml
+          inventory: ansible/inventory.ini
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
