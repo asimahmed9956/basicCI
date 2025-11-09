@@ -29,39 +29,55 @@ jobs:
       
 
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
+  needs: build
+  runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+  steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
-      # 🟢 STEP 1: Configure AWS credentials from GitHub Secrets
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+    # 🟢 STEP 1: Configure AWS credentials from GitHub Secrets
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
-      # 🟢 STEP 2: Setup Terraform
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+    # 🟢 STEP 2: Setup Terraform
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
 
-      # 🟢 STEP 3: Initialize Terraform
-      - name: Terraform Init
-        run: terraform init
-        working-directory: ./Terraform
+    # 🟢 STEP 3: Initialize Terraform
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./terraform
 
-      # 🟢 STEP 4: Apply Terraform (Create EC2)
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: ./Terraform
+    # 🟢 STEP 4: Apply Terraform (Create EC2)
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+      working-directory: ./terraform
 
-      # 🟢 STEP 5: Run Ansible Playbook
-      - name: Run Ansible playbook for deployment
-        uses: dawidd6/action-ansible-playbook@v2
-        with:
-          playbook: ansible/playbook.yml
-          inventory: ansible/inventory.ini
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+    # 🟢 STEP 5: Extract EC2 public IP and save it
+    - name: Get EC2 public IP
+      run: |
+        cd terraform
+        terraform output -raw public_ip > ../ansible/host_ip.txt
+        echo "Public IP from Terraform:"
+        cat ../ansible/host_ip.txt
+
+    # 🟢 STEP 6: Create dynamic Ansible inventory
+    - name: Create dynamic Ansible inventory
+      run: |
+        echo "[fastapi_servers]" > ansible/inventory.ini
+        echo "fastapi_server ansible_host=$(cat ansible/host_ip.txt) ansible_user=ec2-user" >> ansible/inventory.ini
+        echo "Generated inventory:"
+        cat ansible/inventory.ini
+
+    # 🟢 STEP 7: Run Ansible Playbook for deployment
+    - name: Run Ansible playbook for deployment
+      uses: dawidd6/action-ansible-playbook@v2
+      with:
+        playbook: ansible/playbook.yml
+        inventory: ansible/inventory.ini
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
