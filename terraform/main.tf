@@ -12,6 +12,6 @@ resource "aws_instance" "fastapi_server" {
   }
 }
 
-output "public_ip" {
+output "public_ip_one" {
   value = aws_instance.fastapi_server.public_ip
 }
