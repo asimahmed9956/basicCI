@@ -54,7 +54,7 @@ jobs:
       # 🟢 STEP 4: Apply Terraform (Create EC2)
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: ./Terraform
+        working-directory: ./terraform
 
       # 🟢 STEP 5: Extract EC2 public IP and save it
       - name: Get EC2 public IP
@@ -79,3 +79,5 @@ jobs:
           playbook: ansible/playbook.yml
           inventory: ansible/inventory.ini
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          
