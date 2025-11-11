@@ -13,14 +13,20 @@
         name: docker
         state: started
         enabled: yes
+    
+    - name: Copy FastAPI app to EC2
+      copy:
+        src: .
+        dest: /home/ubuntu/fastapi-devops-demo/
 
-    - name: Pull FastAPI Docker image
+
+    - name: Build FastAPI Docker image
       community.docker.docker_image:
         name: fastapi-app
         source: build
         build:
           path: /home/ubuntu/fastapi-devops-demo
-          pull: yes
+         
 
     - name: Run FastAPI container
       community.docker.docker_container:
