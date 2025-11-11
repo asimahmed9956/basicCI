@@ -3,6 +3,11 @@
   hosts: fastapi_servers
   become: true
   tasks:
+    - name: Update yum
+      yum:
+        name: '*'
+        state: latest
+    
     - name: Install Docker
       yum:
         name: docker
