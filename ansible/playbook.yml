@@ -1,6 +1,6 @@
 ---
 - name: Deploy FastAPI container
-  hosts: fastapi
+  hosts: fastapi_servers
   become: true
   tasks:
     - name: Install Docker
