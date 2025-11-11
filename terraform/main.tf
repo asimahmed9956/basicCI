@@ -8,8 +8,8 @@ data "aws_vpc" "default" {
 }
 
 # 🔹 Security group allowing SSH + FastAPI
-resource "aws_security_group" "fastapi_sg2" {
-  name        = "fastapi-sg2"
+resource "aws_security_group" "fastapi_sg3" {
+  name        = "fastapi-sg3"
   description = "Allow SSH and FastAPI traffic"
   vpc_id      = data.aws_vpc.default.id
 
@@ -43,7 +43,7 @@ resource "aws_instance" "fastapi_server" {
   ami           = "ami-02b8269d5e85954ef" 
   instance_type = "t2.micro"
   key_name      = "newkp"
-  security_groups = [aws_security_group.fastapi_sg2.name]
+  security_groups = [aws_security_group.fastapi_sg3.name]
 
   tags = {
     Name = "FastAPI-Server"
