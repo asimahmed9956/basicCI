@@ -3,13 +3,13 @@
   hosts: fastapi_servers
   become: true
   tasks:
-    - name: Update yum
-      yum:
-        name: '*'
-        state: latest
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+    
     
     - name: Install Docker
-      yum:
+      apt:
         name: docker
         state: present
 
@@ -22,7 +22,7 @@
     - name: Copy FastAPI app to EC2
       copy:
         src: .
-        dest: /home/ubuntu/fastapi-devops-demo/
+        dest: /home/ubuntu/
 
 
     - name: Build FastAPI Docker image
@@ -40,3 +40,6 @@
         ports:
           - "80:8000"
         restart_policy: always
+        
+
+        #[fastapi_servers]
