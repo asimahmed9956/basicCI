@@ -79,5 +79,6 @@ jobs:
           playbook: ansible/playbook.yml
           inventory: ansible/inventory.ini
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          options: "-vvv"
 
           
