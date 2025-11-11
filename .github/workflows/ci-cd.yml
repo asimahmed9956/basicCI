@@ -72,6 +72,14 @@ jobs:
           echo "Generated inventory:"
           cat ansible/inventory.ini
 
+      - name: Debug inventory
+        run: |
+            pwd
+            ls -R ansible
+            cat ansible/inventory.ini
+            cat ansible/host_ip.txt
+
+
       # 🟢 STEP 7: Run Ansible Playbook for deployment
       - name: Run Ansible playbook for deployment
         uses: dawidd6/action-ansible-playbook@v2
