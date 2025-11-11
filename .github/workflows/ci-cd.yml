@@ -68,7 +68,7 @@ jobs:
       - name: Create dynamic Ansible inventory
         run: |
           echo "[fastapi_servers]" > ansible/inventory.ini
-          echo "fastapi_server ansible_host=$(cat ansible/host_ip.txt) ansible_user=ec2-user" >> ansible/inventory.ini
+          echo "fastapi_server ansible_host=$(cat ansible/host_ip.txt) ansible_user=ubuntu" >> ansible/inventory.ini
           echo "Generated inventory:"
           cat ansible/inventory.ini
 
