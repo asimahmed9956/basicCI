@@ -61,7 +61,7 @@ resource "aws_instance" "fastapi_server" {
     git clone https://github.com/asimahmed9956/basicCI.git  
     cd basicCI
     docker build -t fastapi-app .
-    docker run -d -p 80:8000 fastapi-app
+    sudo docker run -d -p 80:8000 fastapi-app
   EOF
 
   tags = {
