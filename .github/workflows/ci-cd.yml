@@ -72,12 +72,6 @@ jobs:
           echo "Generated inventory:"
           cat ansible/inventory.ini
 
-      - name: Verify inventory file
-        run: |
-          echo "Inventory path:"
-          realpath ansible/inventory.ini
-          cat ansible/inventory.ini
-
       - name: Install Ansible dependencies
         run: ansible-galaxy collection install community.docker
 
@@ -85,8 +79,9 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ansible/playbook.yml
-          inventory: ./ansible/inventory.ini
+          inventory: ${{ github.workspace }}/ansible/inventory.ini   # ✅ Absolute path
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           options: "-vvv"
+          directory: ${{ github.workspace }}                         # ✅ Ensure correct working dir
 
 #newsample nwew ejkhkl
