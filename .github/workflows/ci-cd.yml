@@ -64,23 +64,23 @@ jobs:
           echo "Public IP from Terraform:"
           cat ../ansible/host_ip.txt
 
-      # 🟢 STEP 6: Create dynamic Ansible inventory
       - name: Create dynamic Ansible inventory
         run: |
+          mkdir -p ansible
           echo "[fastapi_servers]" > ansible/inventory.ini
           echo "fastapi_server ansible_host=$(cat ansible/host_ip.txt) ansible_user=ubuntu" >> ansible/inventory.ini
           echo "Generated inventory:"
           cat ansible/inventory.ini
 
-      - name: Debug inventory
+      - name: Verify inventory file
         run: |
-            pwd
-            ls -R ansible
-            cat ansible/inventory.ini
-            cat ansible/host_ip.txt
+          echo "Inventory path:"
+          realpath ansible/inventory.ini
+          cat ansible/inventory.ini
 
+      - name: Install Ansible dependencies
+        run: ansible-galaxy collection install community.docker
 
-      # 🟢 STEP 7: Run Ansible Playbook for deployment
       - name: Run Ansible playbook for deployment
         uses: dawidd6/action-ansible-playbook@v2
         with:
