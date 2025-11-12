@@ -7,9 +7,13 @@ data "aws_vpc" "default" {
   default = true
 }
 
+resource "random_id" "suffix" {
+  byte_length = 2
+}
+
 # 🔹 Security group allowing SSH + FastAPI
-resource "aws_security_group" "fastapi_sg5" {
-  name        = "fastapi-sg5"
+resource "aws_security_group" "fastapi_sg" {
+  name        = "fastapi-sg-${random_id.suffix.hex}"
   description = "Allow SSH and FastAPI traffic"
   vpc_id      = data.aws_vpc.default.id
 
