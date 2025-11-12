@@ -10,7 +10,7 @@
     
     - name: Install Docker
       apt:
-        name: docker
+        name: docker.io
         state: present
 
     - name: Start Docker service
@@ -22,7 +22,7 @@
     - name: Copy FastAPI app to EC2
       copy:
         src: .
-        dest: /home/ubuntu/
+        dest: /home/ubuntu/fastapi-devops-demo/
 
 
     - name: Build FastAPI Docker image
@@ -30,7 +30,7 @@
         name: fastapi-app
         source: build
         build:
-          path: /home/ubuntu/fastapi-devops-demo
+          path: /home/ubuntu/fastapi-devops-demo/
          
 
     - name: Run FastAPI container
