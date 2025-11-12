@@ -75,6 +75,14 @@ jobs:
       - name: Install Ansible dependencies
         run: ansible-galaxy collection install community.docker
 
+
+      - name: Verify absolute inventory file
+        run: |
+          echo "Inventory absolute path:"
+          realpath ansible/inventory.ini
+          echo "Contents:"
+          cat ansible/inventory.ini
+
       - name: Run Ansible playbook for deployment
         uses: dawidd6/action-ansible-playbook@v2
         with:
