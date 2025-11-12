@@ -58,7 +58,8 @@ resource "aws_instance" "fastapi_server" {
     systemctl start docker
     systemctl enable docker
     cd /home/ubuntu
-    git clone https://github.com/asimahmed9956/basicCI.git  
+    git clone https://github.com/asimahmed9956/basicCI.git
+    sleep 60
     cd basicCI
     docker build -t fastapi-app .
     sudo docker run -d -p 80:8000 fastapi-app
