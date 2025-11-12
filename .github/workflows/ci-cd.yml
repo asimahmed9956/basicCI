@@ -56,36 +56,16 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: ./terraform
 
-      # 🟢 STEP 5: Extract EC2 public IP and save it
       - name: Get EC2 public IP
         run: |
           cd terraform
-          terraform output -raw public_ip > ../ansible/host_ip.txt
-          echo "Public IP from Terraform:"
-          cat ../ansible/host_ip.txt
-
-      - name: Create dynamic Ansible inventory
+          terraform output -raw public_ip > ../public_ip.txt
+          echo "Deployed EC2 Public IP:"
+          cat ../public_ip.txt
+      - name: Verify FastAPI app is running
         run: |
-          mkdir -p ansible
-          echo "[fastapi_servers]" > ansible/inventory.ini
-          echo "fastapi_server ansible_host=$(cat ansible/host_ip.txt) ansible_user=ubuntu" >> ansible/inventory.ini
-          echo "Generated inventory:"
-          cat ansible/inventory.ini
-
-      - name: Install Ansible dependencies
-        run: ansible-galaxy collection install community.docker
-
-      - name: Verify absolute inventory file
-        run: |
-          realpath ansible/inventory.ini
-          cat ansible/inventory.ini
-
-      - name: Run Ansible playbook for deployment
-        uses: dawidd6/action-ansible-playbook@v2
-        with:
-          playbook: playbook.yml
-          inventory: inventory.ini
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          options: "-vvv"
-          directory: ansible
+          IP=$(cat public_ip.txt)
+          sleep 60  # wait for EC2 to finish setup
+          curl -v http://$IP/
+            
 #newsample nwew ejkhkl
